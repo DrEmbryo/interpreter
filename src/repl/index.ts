@@ -1,5 +1,6 @@
 import { input } from "@inquirer/prompts";
 import Parser from "../Parser";
+import { evaluate } from "../runtime/interpreter";
 
 repl();
 
@@ -13,7 +14,7 @@ async function repl() {
     }
 
     const program = new Parser().generateAST(answer);
-
-    console.log(program.body);
+    const result = evaluate(program);
+    console.log(result);
   }
 }

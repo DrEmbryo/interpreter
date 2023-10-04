@@ -6,6 +6,7 @@ export enum TokenType {
   CloseParen,
   BinaryOperator,
   Let,
+  Null,
   EOF,
 }
 
@@ -16,6 +17,7 @@ export interface Token {
 
 const KEY_WORDS: Record<string, TokenType> = {
   let: TokenType.Let,
+  null: TokenType.Null,
 };
 
 function produceToken(value: string, type: TokenType): Token {
@@ -49,13 +51,13 @@ export function tokenize(source: string): Token[] {
       src[0] === "-" ||
       src[0] === "*" ||
       src[0] === "/" ||
-      src[0] === " %"
+      src[0] === "%"
     ) {
       tokens.push(
         produceToken(src.shift() as string, TokenType.BinaryOperator)
       );
     } else if (src[0] === " ") {
-      continue;
+      src.shift();
     } else {
       // multi char tokens
 
@@ -74,12 +76,12 @@ export function tokenize(source: string): Token[] {
           str += src.shift() as string;
         }
         // check reserved key words
-        tokens.push(
-          produceToken(
-            str,
-            KEY_WORDS[str] ? KEY_WORDS[str] : TokenType.Identifier
-          )
-        );
+        const keyword = KEY_WORDS[str];
+        if (typeof keyword === "number") {
+          tokens.push(produceToken(str, keyword));
+        } else {
+          tokens.push(produceToken(str, TokenType.Identifier));
+        }
       } else {
         console.error("Unidentified token detected: ", src[0]);
       }

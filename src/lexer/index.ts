@@ -6,7 +6,6 @@ export enum TokenType {
   CloseParen,
   BinaryOperator,
   Let,
-  Null,
   EOF,
 }
 
@@ -17,7 +16,6 @@ export interface Token {
 
 const KEY_WORDS: Record<string, TokenType> = {
   let: TokenType.Let,
-  null: TokenType.Null,
 };
 
 function produceToken(value: string, type: TokenType): Token {

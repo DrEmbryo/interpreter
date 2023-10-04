@@ -5,7 +5,6 @@ import {
   Identifier,
   NumericLiteral,
   Program,
-  NullLiteral,
 } from "../ast/astNodeTypes";
 
 import { Token, TokenType, tokenize } from "../lexer";
@@ -103,10 +102,6 @@ export default class Parser {
           kind: "Identifier",
           symbol: this.next_token().value,
         } as Identifier;
-      case TokenType.Null: {
-        this.next_token();
-        return { kind: "NullLiteral", value: "null" } as NullLiteral;
-      }
       case TokenType.Number:
         return {
           kind: "NumericLiteral",

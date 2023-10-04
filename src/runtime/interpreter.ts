@@ -1,4 +1,4 @@
-import { ValueType, RuntimeValue, NumberValue, NullValue } from "./values";
+import { RuntimeValue, NumberValue, mk_null } from "./values";
 import {
   Statement,
   AstNodeType,
@@ -10,10 +10,7 @@ import {
 import Environment from "./environment";
 
 function evaluate_program(program: Program, env: Environment): RuntimeValue {
-  let last_evaluated: RuntimeValue = {
-    value: "null",
-    type: "null",
-  } as NullValue;
+  let last_evaluated: RuntimeValue = mk_null();
 
   for (const statement of program.body) {
     last_evaluated = evaluate(statement, env);
@@ -69,7 +66,7 @@ function evaluate_binary_expression(
     );
   }
 
-  return { type: "null", value: "null" } as NullValue;
+  return mk_null();
 }
 
 function evaluate_identifier(node: Identifier, env: Environment): RuntimeValue {
@@ -84,9 +81,6 @@ export function evaluate(node: Statement, env: Environment): RuntimeValue {
         value: (node as NumericLiteral).value,
         type: "number",
       } as NumberValue;
-
-    case "NullLiteral":
-      return { value: "null", type: "null" } as NullValue;
 
     case "Identifier":
       return evaluate_identifier(node as Identifier, env);

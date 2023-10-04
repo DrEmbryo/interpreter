@@ -49,13 +49,13 @@ export function tokenize(source: string): Token[] {
       src[0] === "-" ||
       src[0] === "*" ||
       src[0] === "/" ||
-      src[0] === " %"
+      src[0] === "%"
     ) {
       tokens.push(
         produceToken(src.shift() as string, TokenType.BinaryOperator)
       );
     } else if (src[0] === " ") {
-      continue;
+      src.shift();
     } else {
       // multi char tokens
 
@@ -74,12 +74,12 @@ export function tokenize(source: string): Token[] {
           str += src.shift() as string;
         }
         // check reserved key words
-        tokens.push(
-          produceToken(
-            str,
-            KEY_WORDS[str] ? KEY_WORDS[str] : TokenType.Identifier
-          )
-        );
+        const keyword = KEY_WORDS[str];
+        if (typeof keyword === "number") {
+          tokens.push(produceToken(str, keyword));
+        } else {
+          tokens.push(produceToken(str, TokenType.Identifier));
+        }
       } else {
         console.error("Unidentified token detected: ", src[0]);
       }

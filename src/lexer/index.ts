@@ -37,37 +37,41 @@ export function tokenize(source: string): Token[] {
   const src = source.split("");
 
   while (src.length > 0) {
-    const char = src.shift() as string;
     // single char tokens
-    if (char === "(") {
-      tokens.push(produceToken(char, TokenType.OpenParen));
-    } else if (char === ")") {
-      tokens.push(produceToken(char, TokenType.CloseParen));
-    } else if (char === "=") {
-      tokens.push(produceToken(char, TokenType.Equals));
-    } else if (char === "+" || char === "-" || char === "*" || char === "/") {
-      tokens.push(produceToken(char, TokenType.BinaryOperator));
+    if (src[0] === "(") {
+      tokens.push(produceToken(src.shift() as string, TokenType.OpenParen));
+    } else if (src[0] === ")") {
+      tokens.push(produceToken(src.shift() as string, TokenType.CloseParen));
+    } else if (src[0] === "=") {
+      tokens.push(produceToken(src.shift() as string, TokenType.Equals));
+    } else if (
+      src[0] === "+" ||
+      src[0] === "-" ||
+      src[0] === "*" ||
+      src[0] === "/" ||
+      src[0] === " %"
+    ) {
+      tokens.push(
+        produceToken(src.shift() as string, TokenType.BinaryOperator)
+      );
+    } else if (src[0] === " ") {
+      continue;
     } else {
       // multi char tokens
 
       //Numerics
-      if (isNumeric(char)) {
+      if (isNumeric(src[0])) {
         let number = "";
-        let current = char;
-        while (src.length > 0 && isNumeric(current)) {
-          number += current;
-          current = src.shift() as string;
+        while (src.length > 0 && isNumeric(src[0])) {
+          number += src.shift() as string;
         }
         tokens.push(produceToken(number, TokenType.Number));
       }
       //Alphabetic
-      else if (isAlphabetic(char)) {
-        console.log(char);
+      else if (isAlphabetic(src[0])) {
         let str = "";
-        let current = char;
-        while (src.length > 0 && isAlphabetic(current)) {
-          str += current;
-          current = src.shift() as string;
+        while (src.length > 0 && isAlphabetic(src[0])) {
+          str += src.shift() as string;
         }
         // check reserved key words
         tokens.push(
@@ -77,12 +81,10 @@ export function tokenize(source: string): Token[] {
           )
         );
       } else {
-        console.error("Unidentified token detected: ", char);
+        console.error("Unidentified token detected: ", src[0]);
       }
     }
   }
   tokens.push(produceToken("EOF", TokenType.EOF));
   return tokens;
 }
-
-console.log(tokenize("let x = 6 + ( 7 + y ) "));

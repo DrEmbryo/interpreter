@@ -1,78 +1,27 @@
-import { RuntimeValue, NumberValue, mk_null } from "./values";
+import { RuntimeValue, NumberValue } from "./values";
+
 import {
   Statement,
-  AstNodeType,
   NumericLiteral,
   BinaryExpression,
   Program,
   Identifier,
+  VariableDeclaration,
+  AssignmentExpression,
 } from "../ast/astNodeTypes";
+
 import Environment from "./environment";
 
-function evaluate_program(program: Program, env: Environment): RuntimeValue {
-  let last_evaluated: RuntimeValue = mk_null();
+import {
+  evaluate_program,
+  evaluate_variable_declaration,
+} from "./eval/statements";
 
-  for (const statement of program.body) {
-    last_evaluated = evaluate(statement, env);
-  }
-
-  return last_evaluated;
-}
-
-function evaluate_numeric_binary_expression(
-  leftSide: NumberValue,
-  rightSide: NumberValue,
-  operator: string
-): NumberValue {
-  let result: number;
-
-  switch (operator) {
-    case "+":
-      result = rightSide.value + leftSide.value;
-      break;
-    case "-":
-      result = rightSide.value - leftSide.value;
-      break;
-    case "*":
-      result = rightSide.value * leftSide.value;
-      break;
-    case "/":
-      // TODO: division by zero case
-      result = rightSide.value / leftSide.value;
-      break;
-    case "%":
-      result = rightSide.value % leftSide.value;
-      break;
-    default:
-      result = 0;
-      break;
-  }
-
-  return { type: "number", value: result } as NumberValue;
-}
-
-function evaluate_binary_expression(
-  binop: BinaryExpression,
-  env: Environment
-): RuntimeValue {
-  const leftSide = evaluate(binop.left, env);
-  const rightSide = evaluate(binop.right, env);
-
-  if (leftSide.type === "number" && rightSide.type === "number") {
-    return evaluate_numeric_binary_expression(
-      leftSide as NumberValue,
-      rightSide as NumberValue,
-      binop.operator
-    );
-  }
-
-  return mk_null();
-}
-
-function evaluate_identifier(node: Identifier, env: Environment): RuntimeValue {
-  const value = env.get_variable_value(node.symbol);
-  return value;
-}
+import {
+  evaluate_identifier,
+  evaluate_binary_expression,
+  evaluate_assignment,
+} from "./eval/expressions";
 
 export function evaluate(node: Statement, env: Environment): RuntimeValue {
   switch (node.kind) {
@@ -85,8 +34,14 @@ export function evaluate(node: Statement, env: Environment): RuntimeValue {
     case "Identifier":
       return evaluate_identifier(node as Identifier, env);
 
+    case "AssignmentExpression":
+      return evaluate_assignment(node as AssignmentExpression, env);
+
     case "BinaryExpression":
       return evaluate_binary_expression(node as BinaryExpression, env);
+
+    case "VariableDeclaration":
+      return evaluate_variable_declaration(node as VariableDeclaration, env);
 
     case "Program":
       return evaluate_program(node as Program, env);

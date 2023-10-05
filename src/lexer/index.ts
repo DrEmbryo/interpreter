@@ -4,8 +4,10 @@ export enum TokenType {
   Equals,
   OpenParen,
   CloseParen,
+  Semicolon,
   BinaryOperator,
   Let,
+  Const,
   EOF,
 }
 
@@ -16,6 +18,7 @@ export interface Token {
 
 const KEY_WORDS: Record<string, TokenType> = {
   let: TokenType.Let,
+  const: TokenType.Const,
 };
 
 function produceToken(value: string, type: TokenType): Token {
@@ -44,6 +47,8 @@ export function tokenize(source: string): Token[] {
       tokens.push(produceToken(src.shift() as string, TokenType.CloseParen));
     } else if (src[0] === "=") {
       tokens.push(produceToken(src.shift() as string, TokenType.Equals));
+    } else if (src[0] === ";") {
+      tokens.push(produceToken(src.shift() as string, TokenType.Semicolon));
     } else if (
       src[0] === "+" ||
       src[0] === "-" ||

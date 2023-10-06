@@ -2,7 +2,7 @@ import {
   AssignmentExpression,
   BinaryExpression,
   Identifier,
-} from "../../ast/astNodeTypes";
+} from "../../grammar/ast/astNodeTypes";
 import Environment from "../environment";
 import { evaluate } from "../interpreter";
 import { NumberValue, RuntimeValue, mk_null } from "../values";

@@ -1,4 +1,4 @@
-import { Program, VariableDeclaration } from "../../ast/astNodeTypes";
+import { Program, VariableDeclaration } from "../../grammar/ast/astNodeTypes";
 import Environment from "../environment";
 import { evaluate } from "../interpreter";
 import { RuntimeValue, mk_null } from "../values";

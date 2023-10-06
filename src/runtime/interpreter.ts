@@ -8,7 +8,7 @@ import {
   Identifier,
   VariableDeclaration,
   AssignmentExpression,
-} from "../ast/astNodeTypes";
+} from "../grammar/ast/astNodeTypes";
 
 import Environment from "./environment";
 

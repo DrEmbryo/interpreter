@@ -2,10 +2,11 @@ import {
   AssignmentExpression,
   BinaryExpression,
   Identifier,
+  ObjectLiteral,
 } from "../../grammar/ast/astNodeTypes";
 import Environment from "../environment";
 import { evaluate } from "../interpreter";
-import { NumberValue, RuntimeValue, mk_null } from "../values";
+import { NumberValue, ObjectValue, RuntimeValue, mk_null } from "../values";
 
 function evaluate_numeric_binary_expression(
   leftSide: NumberValue,
@@ -63,6 +64,25 @@ export function evaluate_identifier(
 ): RuntimeValue {
   const value = env.get_variable_value(node.symbol);
   return value;
+}
+
+export function evaluate_object_expression(
+  node: ObjectLiteral,
+  env: Environment
+): RuntimeValue {
+  const object = {
+    type: "object",
+    properties: new Map<string, RuntimeValue>(),
+  } as ObjectValue;
+
+  for (const { key, value } of node.properties) {
+    const runtime_value =
+      value === undefined ? env.get_variable_value(key) : evaluate(value, env);
+
+    object.properties.set(key, runtime_value);
+  }
+
+  return object;
 }
 
 export function evaluate_assignment(

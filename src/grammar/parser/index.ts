@@ -7,6 +7,8 @@ import {
   Program,
   VariableDeclaration,
   AssignmentExpression,
+  Property,
+  ObjectLiteral,
 } from "../ast/astNodeTypes";
 
 import { Token, TokenType, tokenize } from "../lexer";
@@ -103,7 +105,7 @@ export default class Parser {
   }
 
   private parse_assignment_expression(): Expression {
-    const left = this.parse_additive_expression();
+    const left = this.parse_object_expression();
 
     if (this.token_at().type === TokenType.Equals) {
       this.next_token();
@@ -116,6 +118,55 @@ export default class Parser {
     }
 
     return left;
+  }
+
+  private parse_object_expression(): Expression {
+    if (this.token_at().type !== TokenType.OpenCurlyBrace) {
+      return this.parse_additive_expression();
+    }
+
+    this.next_token();
+    const properties = new Array<Property>();
+
+    while (
+      !this.is_eof() &&
+      this.token_at().type !== TokenType.CloseCurlyBrace
+    ) {
+      const key = this.expected_next(
+        TokenType.Identifier,
+        "Object literal key expected"
+      ).value;
+
+      if (this.token_at().type === TokenType.Coma) {
+        this.next_token();
+        properties.push({ kind: "Property", key } as Property);
+        continue;
+      } else if (this.token_at().type === TokenType.CloseCurlyBrace) {
+        properties.push({ kind: "Property", key } as Property);
+        continue;
+      }
+
+      this.expected_next(
+        TokenType.Colon,
+        "Expected colin after identifier in object expression"
+      );
+
+      const value = this.parse_expression();
+
+      properties.push({ kind: "Property", key, value });
+      if (this.token_at().type !== TokenType.CloseCurlyBrace) {
+        this.expected_next(
+          TokenType.Coma,
+          "Expected coma or closing bracket after property"
+        );
+      }
+    }
+
+    this.expected_next(
+      TokenType.CloseCurlyBrace,
+      "Object literal missing closing brace"
+    );
+    return { kind: "ObjectLiteral", properties } as ObjectLiteral;
   }
 
   private parse_multiplicative_expression(): Expression {

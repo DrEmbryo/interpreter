@@ -1,11 +1,5 @@
-import Parser from "../parser";
-import Environment from "../runtime/environment";
-import { mk_boolean, mk_null, mk_number } from "../runtime/values";
+import Parser from "../grammar/parser";
+import { create_global_env } from "../runtime/environment";
 
 export const parser = new Parser();
-export const env = new Environment();
-
-env.declare_variable("x", mk_number(5), false);
-env.declare_variable("true", mk_boolean(true), true);
-env.declare_variable("false", mk_boolean(false), true);
-env.declare_variable("null", mk_null(), true);
+export const env = create_global_env();

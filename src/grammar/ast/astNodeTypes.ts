@@ -1,9 +1,12 @@
 export type AstNodeType =
-  //statements
+  // Statements
   | "Program"
   | "VariableDeclaration"
-  //expressions
+  // Expressions
   | "Identifier"
+  // Literals
+  | "Property"
+  | "ObjectLiteral"
   | "NumericLiteral"
   | "BinaryExpression"
   | "AssignmentExpression";
@@ -49,4 +52,15 @@ export interface AssignmentExpression extends Expression {
   kind: "AssignmentExpression";
   assigne: Expression;
   value: Expression;
+}
+
+export interface Property extends Expression {
+  kind: "Property";
+  key: string;
+  value?: Expression;
+}
+
+export interface ObjectLiteral extends Expression {
+  kind: "ObjectLiteral";
+  properties: Property[];
 }

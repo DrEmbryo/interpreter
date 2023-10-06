@@ -1,0 +1,11 @@
+const foo = 6;
+
+const obj = {
+    i: 100,
+    j: 200,
+    foo,
+    complex: {
+        bar: true
+    },
+};
+

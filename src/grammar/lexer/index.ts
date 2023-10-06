@@ -1,13 +1,27 @@
+import { is_binary_operator, is_skippable } from "./rules";
+
 export enum TokenType {
+  // Literal Types
   Identifier,
   Number,
-  Equals,
-  OpenParen,
-  CloseParen,
-  Semicolon,
-  BinaryOperator,
+  // Keywords
   Let,
   Const,
+
+  // Grouping/Operayors
+  BinaryOperator,
+  Equals,
+  Coma,
+  Colon,
+  Semicolon,
+  OpenParen,
+  CloseParen,
+  OpenSquareBrace,
+  CloseSquareBrace,
+  OpenCurlyBrace,
+  CloseCurlyBrace,
+
+  // Standalone Types
   EOF,
 }
 
@@ -49,17 +63,23 @@ export function tokenize(source: string): Token[] {
       tokens.push(produceToken(src.shift() as string, TokenType.Equals));
     } else if (src[0] === ";") {
       tokens.push(produceToken(src.shift() as string, TokenType.Semicolon));
-    } else if (
-      src[0] === "+" ||
-      src[0] === "-" ||
-      src[0] === "*" ||
-      src[0] === "/" ||
-      src[0] === "%"
-    ) {
+    } else if (is_binary_operator(src[0])) {
       tokens.push(
         produceToken(src.shift() as string, TokenType.BinaryOperator)
       );
-    } else if (src[0] === " ") {
+    } else if (src[0] === "{") {
+      tokens.push(
+        produceToken(src.shift() as string, TokenType.OpenCurlyBrace)
+      );
+    } else if (src[0] === "}") {
+      tokens.push(
+        produceToken(src.shift() as string, TokenType.CloseCurlyBrace)
+      );
+    } else if (src[0] === ":") {
+      tokens.push(produceToken(src.shift() as string, TokenType.Colon));
+    } else if (src[0] === ",") {
+      tokens.push(produceToken(src.shift() as string, TokenType.Coma));
+    } else if (is_skippable(src[0])) {
       src.shift();
     } else {
       // multi char tokens

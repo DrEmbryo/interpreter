@@ -8,6 +8,7 @@ import {
   Identifier,
   VariableDeclaration,
   AssignmentExpression,
+  ObjectLiteral,
 } from "../grammar/ast/astNodeTypes";
 
 import Environment from "./environment";
@@ -21,6 +22,7 @@ import {
   evaluate_identifier,
   evaluate_binary_expression,
   evaluate_assignment,
+  evaluate_object_expression,
 } from "./eval/expressions";
 
 export function evaluate(node: Statement, env: Environment): RuntimeValue {
@@ -33,6 +35,9 @@ export function evaluate(node: Statement, env: Environment): RuntimeValue {
 
     case "Identifier":
       return evaluate_identifier(node as Identifier, env);
+
+    case "ObjectLiteral":
+      return evaluate_object_expression(node as ObjectLiteral, env);
 
     case "AssignmentExpression":
       return evaluate_assignment(node as AssignmentExpression, env);

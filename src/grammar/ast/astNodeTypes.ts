@@ -2,14 +2,16 @@ export type AstNodeType =
   // Statements
   | "Program"
   | "VariableDeclaration"
-  // Expressions
-  | "Identifier"
   // Literals
+  | "Identifier"
   | "Property"
   | "ObjectLiteral"
   | "NumericLiteral"
+  // Expressions
   | "BinaryExpression"
-  | "AssignmentExpression";
+  | "AssignmentExpression"
+  | "MemberExpression"
+  | "CallExpression";
 
 export interface Statement {
   kind: AstNodeType;
@@ -46,6 +48,19 @@ export interface BinaryExpression extends Expression {
   right: Expression;
   left: Expression;
   operator: string;
+}
+
+export interface MemberExpression extends Expression {
+  kind: "MemberExpression";
+  object: Expression;
+  property: Expression;
+  computed: boolean;
+}
+
+export interface CallExpression extends Expression {
+  kind: "CallExpression";
+  args: Expression[];
+  caller: Expression;
 }
 
 export interface AssignmentExpression extends Expression {

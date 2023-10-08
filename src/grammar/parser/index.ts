@@ -9,6 +9,8 @@ import {
   AssignmentExpression,
   Property,
   ObjectLiteral,
+  CallExpression,
+  MemberExpression,
 } from "../ast/astNodeTypes";
 
 import { Token, TokenType } from "../lexer/rules";
@@ -171,7 +173,7 @@ export default class Parser {
   }
 
   private parse_multiplicative_expression(): Expression {
-    let left = this.parse_primary_expression();
+    let left = this.parse_call_member_expression();
 
     while (
       this.token_at().value === "*" ||
@@ -179,7 +181,7 @@ export default class Parser {
       this.token_at().value === "%"
     ) {
       const operator = this.next_token().value;
-      const right = this.parse_primary_expression();
+      const right = this.parse_call_member_expression();
       left = {
         kind: "BinaryExpression",
         left,
@@ -189,6 +191,91 @@ export default class Parser {
     }
 
     return left;
+  }
+
+  private parse_call_member_expression(): Expression {
+    const member = this.parse_member_expression();
+
+    if (this.token_at().type === TokenType.OpenParen) {
+      return this.parse_call_expression(member);
+    }
+
+    return member;
+  }
+
+  private parse_call_expression(caller: Expression): Expression {
+    let call: Expression = {
+      kind: "CallExpression",
+      caller,
+      args: this.parse_arguments(),
+    } as CallExpression;
+
+    if (this.token_at().type == TokenType.OpenParen) {
+      call = this.parse_call_expression(call);
+    }
+
+    return call;
+  }
+
+  private parse_arguments(): Expression[] {
+    this.expected_next(TokenType.OpenParen, "Expected open parentheses");
+    const args =
+      this.token_at().type == TokenType.CloseParen
+        ? []
+        : this.parse_arguments_list();
+    this.expected_next(
+      TokenType.CloseParen,
+      "Missing closing parentheses inside argument list"
+    );
+    return args;
+  }
+
+  private parse_arguments_list(): Expression[] {
+    const args = [this.parse_assignment_expression()];
+
+    while (this.token_at().type === TokenType.Coma && this.next_token()) {
+      args.push(this.parse_assignment_expression());
+    }
+
+    return args;
+  }
+
+  private parse_member_expression(): Expression {
+    let object = this.parse_primary_expression();
+
+    while (
+      this.token_at().type === TokenType.Dot ||
+      this.token_at().type === TokenType.OpenSquareBrace
+    ) {
+      const operator = this.next_token();
+      let property: Expression;
+      let computed: boolean;
+
+      if (operator.type == TokenType.Dot) {
+        computed = false;
+        property = this.parse_primary_expression();
+
+        if (property.kind !== "Identifier") {
+          throw `Can't use . without right hand side being an identifier`;
+        }
+      } else {
+        computed = true;
+        property = this.parse_expression();
+        this.expected_next(
+          TokenType.CloseSquareBrace,
+          "Missing closing square brace in computed value"
+        );
+      }
+
+      object = {
+        kind: "MemberExpression",
+        object,
+        property,
+        computed,
+      } as MemberExpression;
+    }
+
+    return object;
   }
 
   private parse_additive_expression(): Expression {

@@ -11,6 +11,7 @@ export enum TokenType {
   BinaryOperator,
   Equals,
   Coma,
+  Dot,
   Colon,
   Semicolon,
   OpenParen,
@@ -32,6 +33,7 @@ export interface Token {
 export const SINGLE_CHAR_TOKEN: Record<string, TokenType> = {
   "=": TokenType.Equals,
   ",": TokenType.Coma,
+  ".": TokenType.Dot,
   ":": TokenType.Colon,
   ";": TokenType.Semicolon,
   "(": TokenType.OpenParen,

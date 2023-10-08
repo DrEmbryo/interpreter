@@ -1,4 +1,4 @@
-const foo = 6;
+const foo = 6 / 2;
 
 const obj = {
     i: 100,
@@ -9,3 +9,6 @@ const obj = {
     },
 };
 
+let f = obj.complex.bar;
+
+foo = obj.foo() + 5

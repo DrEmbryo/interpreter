@@ -20,8 +20,9 @@ async function main() {
       process.exit();
     }
 
-    const program = parser.generateAST(source);
+    const program = parser.generateAST(answer);
     const result = evaluate(program, env);
     console.log(result);
+    break;
   }
 }

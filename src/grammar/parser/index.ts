@@ -11,7 +11,8 @@ import {
   ObjectLiteral,
 } from "../ast/astNodeTypes";
 
-import { Token, TokenType, tokenize } from "../lexer";
+import { Token, TokenType } from "../lexer/rules";
+import { tokenize } from "../lexer";
 
 export default class Parser {
   private tokens: Token[] = [];
@@ -39,7 +40,7 @@ export default class Parser {
 
   public generateAST(source: string): Program {
     this.tokens = tokenize(source);
-
+    console.log(this.tokens);
     const program: Program = {
       kind: "Program",
       body: [],

@@ -2,6 +2,7 @@ export type AstNodeType =
   // Statements
   | "Program"
   | "VariableDeclaration"
+  | "FunctionDeclaration"
   // Literals
   | "Identifier"
   | "Property"
@@ -31,6 +32,13 @@ export interface VariableDeclaration extends Statement {
   constant: boolean;
   identifier: string;
   value?: Expression;
+}
+
+export interface FunctionDeclaration extends Statement {
+  kind: "FunctionDeclaration";
+  parameters: string[];
+  name: string;
+  body: Statement[];
 }
 
 export interface Identifier extends Expression {

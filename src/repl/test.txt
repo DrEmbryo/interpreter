@@ -1,14 +1,7 @@
-const foo = 6 / 2;
+function a (x,y) {
+    x + y
+}
 
-const obj = {
-    i: 100,
-    j: 200,
-    foo,
-    complex: {
-        bar: true
-    },
-};
+const b = a( 7, 5 );
 
-let f = obj.complex.bar;
-
-foo = obj.foo() + 5
+print(b)

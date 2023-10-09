@@ -11,6 +11,7 @@ import {
   ObjectLiteral,
   CallExpression,
   MemberExpression,
+  FunctionDeclaration,
 } from "../ast/astNodeTypes";
 
 import { Token, TokenType } from "../lexer/rules";
@@ -42,7 +43,6 @@ export default class Parser {
 
   public generateAST(source: string): Program {
     this.tokens = tokenize(source);
-    console.log(this.tokens);
     const program: Program = {
       kind: "Program",
       body: [],
@@ -60,8 +60,49 @@ export default class Parser {
       case TokenType.Let:
       case TokenType.Const:
         return this.parse_variable_declaration();
+      case TokenType.Function:
+        return this.parse_function_declaration();
     }
     return this.parse_expression();
+  }
+
+  private parse_function_declaration(): Statement {
+    this.next_token();
+    const name = this.expected_next(
+      TokenType.Identifier,
+      "Expected function name following function keyword"
+    ).value;
+
+    const args = this.parse_arguments();
+    const parameters = args.map((arg) => {
+      if (arg.kind !== "Identifier") {
+        throw "Function declaration parameters expected to be of type string.";
+      }
+      return (arg as Identifier).symbol;
+    });
+
+    this.expected_next(TokenType.OpenCurlyBrace, "Expected function body");
+    const body: Statement[] = [];
+
+    while (
+      this.token_at().type !== TokenType.EOF &&
+      this.token_at().type != TokenType.CloseCurlyBrace
+    ) {
+      body.push(this.parse_statement());
+    }
+    this.expected_next(
+      TokenType.CloseCurlyBrace,
+      "Expected closing brace at the end of the function body"
+    );
+
+    const func = {
+      kind: "FunctionDeclaration",
+      name,
+      parameters,
+      body,
+    } as FunctionDeclaration;
+
+    return func;
   }
 
   private parse_variable_declaration(): Statement {

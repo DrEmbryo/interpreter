@@ -6,6 +6,7 @@ export enum TokenType {
   // Keywords
   Let,
   Const,
+  Function,
 
   // Grouping / Operators
   BinaryOperator,
@@ -53,6 +54,7 @@ export const SINGLE_CHAR_TOKEN: Record<string, TokenType> = {
 export const KEY_WORDS: Record<string, TokenType> = {
   let: TokenType.Let,
   const: TokenType.Const,
+  function: TokenType.Function,
 };
 
 export function is_skippable(char: string): boolean {

@@ -1,6 +1,7 @@
 import {
   KEY_WORDS,
   SINGLE_CHAR_TOKEN,
+  MULTI_CHAR_TOKEN,
   Token,
   TokenType,
   is_skippable,
@@ -33,9 +34,22 @@ export function tokenize(source: string): Token[] {
       src.shift();
     } else {
       // multi char tokens
-
+      if (typeof MULTI_CHAR_TOKEN[src[0]] == "number") {
+        if (MULTI_CHAR_TOKEN[src[0]] === TokenType.DoubleQuote) {
+          src.shift();
+          let str = "";
+          while (
+            src.length > 0 &&
+            MULTI_CHAR_TOKEN[src[0]] !== TokenType.DoubleQuote
+          ) {
+            str += src.shift() as string;
+          }
+          tokens.push(produceToken(str, TokenType.String));
+          src.shift();
+        }
+      }
       //Numerics
-      if (isNumeric(src[0])) {
+      else if (isNumeric(src[0])) {
         let number = "";
         while (src.length > 0 && isNumeric(src[0])) {
           number += src.shift() as string;

@@ -25,20 +25,20 @@ function evaluate_numeric_binary_expression(
 
   switch (operator) {
     case "+":
-      result = rightSide.value + leftSide.value;
+      result = leftSide.value + rightSide.value;
       break;
     case "-":
-      result = rightSide.value - leftSide.value;
+      result = leftSide.value - rightSide.value;
       break;
     case "*":
-      result = rightSide.value * leftSide.value;
+      result = leftSide.value * rightSide.value;
       break;
     case "/":
       // TODO: division by zero case
-      result = rightSide.value / leftSide.value;
+      result = leftSide.value / rightSide.value;
       break;
     case "%":
-      result = rightSide.value % leftSide.value;
+      result = leftSide.value % rightSide.value;
       break;
     default:
       result = 0;

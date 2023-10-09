@@ -12,6 +12,7 @@ import {
   CallExpression,
   MemberExpression,
   FunctionDeclaration,
+  StringLiteral,
 } from "../ast/astNodeTypes";
 
 import { Token, TokenType } from "../lexer/rules";
@@ -349,6 +350,11 @@ export default class Parser {
           kind: "NumericLiteral",
           value: parseFloat(this.next_token().value),
         } as NumericLiteral;
+      case TokenType.String:
+        return {
+          kind: "StringLiteral",
+          value: this.next_token().value,
+        } as StringLiteral;
 
       case TokenType.OpenParen: {
         this.next_token();

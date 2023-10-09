@@ -1,4 +1,4 @@
-import { RuntimeValue, NumberValue } from "./values";
+import { RuntimeValue, NumberValue, StringValue } from "./values";
 
 import {
   Statement,
@@ -11,6 +11,7 @@ import {
   ObjectLiteral,
   CallExpression,
   FunctionDeclaration,
+  StringLiteral,
 } from "../grammar/ast/astNodeTypes";
 
 import Environment from "./environment";
@@ -33,9 +34,15 @@ export function evaluate(node: Statement, env: Environment): RuntimeValue {
   switch (node.kind) {
     case "NumericLiteral":
       return {
-        value: (node as NumericLiteral).value,
         type: "number",
+        value: (node as NumericLiteral).value,
       } as NumberValue;
+
+    case "StringLiteral":
+      return {
+        type: "string",
+        value: (node as StringLiteral).value,
+      } as StringValue;
 
     case "Identifier":
       return evaluate_identifier(node as Identifier, env);

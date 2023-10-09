@@ -8,6 +8,7 @@ export type AstNodeType =
   | "Property"
   | "ObjectLiteral"
   | "NumericLiteral"
+  | "StringLiteral"
   // Expressions
   | "BinaryExpression"
   | "AssignmentExpression"
@@ -49,6 +50,11 @@ export interface Identifier extends Expression {
 export interface NumericLiteral extends Expression {
   kind: "NumericLiteral";
   value: number;
+}
+
+export interface StringLiteral extends Expression {
+  kind: "StringLiteral";
+  value: string;
 }
 
 export interface BinaryExpression extends Expression {

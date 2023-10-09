@@ -22,6 +22,7 @@ async function main() {
 
     const program = parser.generateAST(source);
     const result = evaluate(program, env);
+
     break;
   }
 }

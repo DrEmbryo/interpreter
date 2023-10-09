@@ -4,6 +4,7 @@ import Environment from "./environment";
 export type ValueType =
   | "null"
   | "number"
+  | "string"
   | "boolean"
   | "object"
   | "function"
@@ -21,6 +22,11 @@ export interface NullValue extends RuntimeValue {
 export interface BooleanValue extends RuntimeValue {
   type: "boolean";
   value: boolean;
+}
+
+export interface StringValue extends RuntimeValue {
+  type: "string";
+  value: string;
 }
 
 export interface ObjectValue extends RuntimeValue {
@@ -57,6 +63,10 @@ export interface NumberValue extends RuntimeValue {
 
 export function mk_number(value: number) {
   return { type: "number", value: value } as NumberValue;
+}
+
+export function mk_string(value: string) {
+  return { type: "string", value: value } as StringValue;
 }
 
 export function mk_null() {

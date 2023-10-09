@@ -1,11 +1,3 @@
-const foo = 6;
+let a = "this is a string";
 
-const obj = {
-    i: 100,
-    j: 200,
-    foo,
-    complex: {
-        bar: true
-    },
-};
-
+print(a)

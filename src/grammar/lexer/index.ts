@@ -1,39 +1,11 @@
-import { is_binary_operator, is_skippable } from "./rules";
-
-export enum TokenType {
-  // Literal Types
-  Identifier,
-  Number,
-  // Keywords
-  Let,
-  Const,
-
-  // Grouping/Operayors
-  BinaryOperator,
-  Equals,
-  Coma,
-  Colon,
-  Semicolon,
-  OpenParen,
-  CloseParen,
-  OpenSquareBrace,
-  CloseSquareBrace,
-  OpenCurlyBrace,
-  CloseCurlyBrace,
-
-  // Standalone Types
-  EOF,
-}
-
-export interface Token {
-  value: string;
-  type: TokenType;
-}
-
-const KEY_WORDS: Record<string, TokenType> = {
-  let: TokenType.Let,
-  const: TokenType.Const,
-};
+import {
+  KEY_WORDS,
+  SINGLE_CHAR_TOKEN,
+  MULTI_CHAR_TOKEN,
+  Token,
+  TokenType,
+  is_skippable,
+} from "./rules";
 
 function produceToken(value: string, type: TokenType): Token {
   return { value, type };
@@ -55,37 +27,29 @@ export function tokenize(source: string): Token[] {
 
   while (src.length > 0) {
     // single char tokens
-    if (src[0] === "(") {
-      tokens.push(produceToken(src.shift() as string, TokenType.OpenParen));
-    } else if (src[0] === ")") {
-      tokens.push(produceToken(src.shift() as string, TokenType.CloseParen));
-    } else if (src[0] === "=") {
-      tokens.push(produceToken(src.shift() as string, TokenType.Equals));
-    } else if (src[0] === ";") {
-      tokens.push(produceToken(src.shift() as string, TokenType.Semicolon));
-    } else if (is_binary_operator(src[0])) {
-      tokens.push(
-        produceToken(src.shift() as string, TokenType.BinaryOperator)
-      );
-    } else if (src[0] === "{") {
-      tokens.push(
-        produceToken(src.shift() as string, TokenType.OpenCurlyBrace)
-      );
-    } else if (src[0] === "}") {
-      tokens.push(
-        produceToken(src.shift() as string, TokenType.CloseCurlyBrace)
-      );
-    } else if (src[0] === ":") {
-      tokens.push(produceToken(src.shift() as string, TokenType.Colon));
-    } else if (src[0] === ",") {
-      tokens.push(produceToken(src.shift() as string, TokenType.Coma));
+    if (typeof SINGLE_CHAR_TOKEN[src[0]] == "number") {
+      const type = SINGLE_CHAR_TOKEN[src[0]];
+      tokens.push(produceToken(src.shift() as string, type));
     } else if (is_skippable(src[0])) {
       src.shift();
     } else {
       // multi char tokens
-
+      if (typeof MULTI_CHAR_TOKEN[src[0]] == "number") {
+        if (MULTI_CHAR_TOKEN[src[0]] === TokenType.DoubleQuote) {
+          src.shift();
+          let str = "";
+          while (
+            src.length > 0 &&
+            MULTI_CHAR_TOKEN[src[0]] !== TokenType.DoubleQuote
+          ) {
+            str += src.shift() as string;
+          }
+          tokens.push(produceToken(str, TokenType.String));
+          src.shift();
+        }
+      }
       //Numerics
-      if (isNumeric(src[0])) {
+      else if (isNumeric(src[0])) {
         let number = "";
         while (src.length > 0 && isNumeric(src[0])) {
           number += src.shift() as string;

@@ -14,14 +14,15 @@ async function main() {
   const source = await read_from_file("test.txt");
   console.log("\nrepl v0.02");
   while (true) {
-    const answer = await input({ message: "> " });
+    // const answer = await input({ message: "> " });
 
-    if (!answer || answer.includes("exit")) {
-      process.exit();
-    }
+    // if (!answer || answer.includes("exit")) {
+    //   process.exit();
+    // }
 
     const program = parser.generateAST(source);
     const result = evaluate(program, env);
-    console.log(result);
+
+    break;
   }
 }

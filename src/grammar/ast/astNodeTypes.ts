@@ -2,14 +2,18 @@ export type AstNodeType =
   // Statements
   | "Program"
   | "VariableDeclaration"
-  // Expressions
-  | "Identifier"
+  | "FunctionDeclaration"
   // Literals
+  | "Identifier"
   | "Property"
   | "ObjectLiteral"
   | "NumericLiteral"
+  | "StringLiteral"
+  // Expressions
   | "BinaryExpression"
-  | "AssignmentExpression";
+  | "AssignmentExpression"
+  | "MemberExpression"
+  | "CallExpression";
 
 export interface Statement {
   kind: AstNodeType;
@@ -31,6 +35,13 @@ export interface VariableDeclaration extends Statement {
   value?: Expression;
 }
 
+export interface FunctionDeclaration extends Statement {
+  kind: "FunctionDeclaration";
+  parameters: string[];
+  name: string;
+  body: Statement[];
+}
+
 export interface Identifier extends Expression {
   kind: "Identifier";
   symbol: string;
@@ -41,11 +52,29 @@ export interface NumericLiteral extends Expression {
   value: number;
 }
 
+export interface StringLiteral extends Expression {
+  kind: "StringLiteral";
+  value: string;
+}
+
 export interface BinaryExpression extends Expression {
   kind: "BinaryExpression";
   right: Expression;
   left: Expression;
   operator: string;
+}
+
+export interface MemberExpression extends Expression {
+  kind: "MemberExpression";
+  object: Expression;
+  property: Expression;
+  computed: boolean;
+}
+
+export interface CallExpression extends Expression {
+  kind: "CallExpression";
+  args: Expression[];
+  caller: Expression;
 }
 
 export interface AssignmentExpression extends Expression {

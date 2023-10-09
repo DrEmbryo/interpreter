@@ -1,12 +1,20 @@
 import {
   AssignmentExpression,
   BinaryExpression,
+  CallExpression,
   Identifier,
   ObjectLiteral,
 } from "../../grammar/ast/astNodeTypes";
 import Environment from "../environment";
 import { evaluate } from "../interpreter";
-import { NumberValue, ObjectValue, RuntimeValue, mk_null } from "../values";
+import {
+  FunctionValue,
+  NativeFunctionValue,
+  NumberValue,
+  ObjectValue,
+  RuntimeValue,
+  mk_null,
+} from "../values";
 
 function evaluate_numeric_binary_expression(
   leftSide: NumberValue,
@@ -17,20 +25,20 @@ function evaluate_numeric_binary_expression(
 
   switch (operator) {
     case "+":
-      result = rightSide.value + leftSide.value;
+      result = leftSide.value + rightSide.value;
       break;
     case "-":
-      result = rightSide.value - leftSide.value;
+      result = leftSide.value - rightSide.value;
       break;
     case "*":
-      result = rightSide.value * leftSide.value;
+      result = leftSide.value * rightSide.value;
       break;
     case "/":
       // TODO: division by zero case
-      result = rightSide.value / leftSide.value;
+      result = leftSide.value / rightSide.value;
       break;
     case "%":
-      result = rightSide.value % leftSide.value;
+      result = leftSide.value % rightSide.value;
       break;
     default:
       result = 0;
@@ -83,6 +91,38 @@ export function evaluate_object_expression(
   }
 
   return object;
+}
+
+export function evaluate_call_expression(
+  expression: CallExpression,
+  env: Environment
+): RuntimeValue {
+  const args = expression.args.map((arg) => evaluate(arg, env));
+  const fn = evaluate(expression.caller, env);
+
+  if (fn.type === "native_function") {
+    const res = (fn as NativeFunctionValue).call(args, env);
+    return res;
+  }
+
+  if (fn.type === "function") {
+    const func = fn as FunctionValue;
+    const scope = new Environment(func.env);
+
+    for (let i = 0; i < func.parameters.length; i++) {
+      // TODO: check if function has correct amount arguments
+      scope.declare_variable(func.parameters[i], args[i], false);
+    }
+
+    let res: RuntimeValue = mk_null();
+    for (const statement of func.body) {
+      res = evaluate(statement, scope);
+    }
+
+    return res;
+  }
+
+  throw "Can't call value that is not a function";
 }
 
 export function evaluate_assignment(

@@ -323,7 +323,12 @@ export default class Parser {
   private parse_additive_expression(): Expression {
     let left = this.parse_multiplicative_expression();
 
-    while (this.token_at().value === "+" || this.token_at().value === "-") {
+    while (
+      this.token_at().value === "+" ||
+      this.token_at().value === "-" ||
+      this.token_at().value === "<" ||
+      this.token_at().value === ">"
+    ) {
       const operator = this.next_token().value;
       const right = this.parse_multiplicative_expression();
       left = {

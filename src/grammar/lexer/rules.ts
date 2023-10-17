@@ -22,8 +22,6 @@ export enum TokenType {
   CloseSquareBrace,
   OpenCurlyBrace,
   CloseCurlyBrace,
-  OpenAngleBrace,
-  CloseAngleBrace,
   DoubleQuote,
   // Standalone Types
   EOF,
@@ -52,12 +50,12 @@ export const SINGLE_CHAR_TOKEN: Record<string, TokenType> = {
   "*": TokenType.BinaryOperator,
   "/": TokenType.BinaryOperator,
   "%": TokenType.BinaryOperator,
+  "<": TokenType.BinaryOperator,
+  ">": TokenType.BinaryOperator,
 };
 
 export const MULTI_CHAR_TOKEN: Record<string, TokenType> = {
   '"': TokenType.DoubleQuote,
-  "<": TokenType.OpenAngleBrace,
-  ">": TokenType.CloseAngleBrace,
 };
 
 export const KEY_WORDS: Record<string, TokenType> = {

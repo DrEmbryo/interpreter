@@ -8,6 +8,7 @@ import {
 import Environment from "../environment";
 import { evaluate } from "../interpreter";
 import {
+  BooleanValue,
   FunctionValue,
   NativeFunctionValue,
   NumberValue,
@@ -34,11 +35,12 @@ function evaluate_numeric_binary_expression(
       result = leftSide.value * rightSide.value;
       break;
     case "/":
-      // TODO: division by zero case
-      result = leftSide.value / rightSide.value;
+      if (rightSide.value !== 0) result = leftSide.value / rightSide.value;
+      else result = Infinity;
       break;
     case "%":
-      result = leftSide.value % rightSide.value;
+      if (rightSide.value !== 0) result = leftSide.value % rightSide.value;
+      else result = Infinity;
       break;
     default:
       result = 0;
@@ -46,6 +48,28 @@ function evaluate_numeric_binary_expression(
   }
 
   return { type: "number", value: result } as NumberValue;
+}
+
+function evaluate_logic_binary_expression(
+  leftSide: NumberValue,
+  rightSide: NumberValue,
+  operator: string
+): BooleanValue {
+  let result: boolean;
+
+  switch (operator) {
+    case ">":
+      result = leftSide.value > rightSide.value;
+      break;
+    case "<":
+      result = leftSide.value < rightSide.value;
+      break;
+    default:
+      result = false;
+      break;
+  }
+
+  return { type: "boolean", value: result } as BooleanValue;
 }
 
 export function evaluate_binary_expression(
@@ -56,11 +80,18 @@ export function evaluate_binary_expression(
   const rightSide = evaluate(binop.right, env);
 
   if (leftSide.type === "number" && rightSide.type === "number") {
-    return evaluate_numeric_binary_expression(
-      leftSide as NumberValue,
-      rightSide as NumberValue,
-      binop.operator
-    );
+    if (binop.operator === "<" || binop.operator === ">")
+      return evaluate_logic_binary_expression(
+        leftSide as NumberValue,
+        rightSide as NumberValue,
+        binop.operator
+      );
+    else
+      return evaluate_numeric_binary_expression(
+        leftSide as NumberValue,
+        rightSide as NumberValue,
+        binop.operator
+      );
   }
 
   return mk_null();
@@ -110,7 +141,8 @@ export function evaluate_call_expression(
     const scope = new Environment(func.env);
 
     for (let i = 0; i < func.parameters.length; i++) {
-      // TODO: check if function has correct amount arguments
+      if (func.parameters.length !== args.length)
+        throw `Function ${func.name} call miss-match arguments. Expected ${func.parameters.length} args, received ${args.length}`;
       scope.declare_variable(func.parameters[i], args[i], false);
     }
 
